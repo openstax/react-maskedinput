@@ -31,7 +31,7 @@
     "inputmask-core": "^2.1.1"
   },
   "peerDependencies": {
-    "react": "0.14.x || 15.x.x"
+    "react": "0.13.x || 0.14.x || 15.x.x"
   },
   "devDependencies": {
     "eslint-config-jonnybuchanan": "2.0.3",

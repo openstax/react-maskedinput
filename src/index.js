@@ -24,7 +24,8 @@ var MaskedInput = React.createClass({
 
   getDefaultProps() {
     return {
-      value: ''
+      value: '',
+      ref: 'input'
     }
   },
 
@@ -40,6 +41,10 @@ var MaskedInput = React.createClass({
     this.mask = new InputMask(options)
   },
 
+  componentDidMount() {
+    this.input = this._getInputDOMNode()
+  },
+
   componentWillReceiveProps(nextProps) {
     if (this.props.value !== nextProps.value) {
       this.mask.setValue(nextProps.value)
@@ -47,6 +52,49 @@ var MaskedInput = React.createClass({
     if (this.props.mask !== nextProps.mask) {
       this.mask.setPattern(nextProps.mask, {value: this.mask.getRawValue()})
     }
+  },
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.mask !== this.props.mask) {
+      this._updatePattern(nextProps)
+    }
+  },
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.mask !== this.props.mask && this.mask.selection.start) {
+      this._updateInputSelection()
+    }
+  },
+
+  // https://github.com/sanniassin/react-input-mask/blob/master/InputElement.js#L41-L60
+  // For backwards compatibility
+  _isDOMElement(element) {
+      return typeof HTMLElement === "object"
+             ? element instanceof HTMLElement // DOM2
+             : element.nodeType === 1 && typeof element.nodeName === "string";
+  },
+
+  _getInputDOMNode() {
+    var {ref} = this.props
+    var input = this.refs[ref]
+
+    if (!input) {
+        return null
+    }
+
+    // React 0.14
+    if (this._isDOMElement(input)) {
+        return input
+    }
+
+    return React.findDOMNode(input)
+  },
+
+  _updatePattern: function(props) {
+    this.mask.setPattern(props.mask, {
+      value: this.mask.getRawValue(),
+      selection: getSelection(this.input)
+    });
   },
 
   _updateMaskSelection() {
@@ -162,10 +210,10 @@ var MaskedInput = React.createClass({
   },
 
   render() {
-    var {mask, formatCharacters, size, placeholder, ...props} = this.props
+    var {mask, formatCharacters, size, placeholder, ref, ...props} = this.props
     var patternLength = this.mask.pattern.length
     return <input {...props}
-      ref={r => this.input = r }
+      ref={ref}
       maxLength={patternLength}
       onChange={this._onChange}
       onKeyDown={this._onKeyDown}
