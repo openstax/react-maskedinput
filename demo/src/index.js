@@ -1,6 +1,7 @@
 import './style.css'
 
 import React from 'react'
+import {render} from 'react-dom'
 
 import MaskedInput from '../../src'
 
@@ -130,4 +131,4 @@ const CustomInput = React.createClass({
   }
 })
 
-React.render(<App/>, document.getElementById('demo'))
+render(<App/>, document.getElementById('demo'))

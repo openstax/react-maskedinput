@@ -42,8 +42,7 @@ var MaskedInput = React.createClass({
   },
 
   componentDidMount() {
-    var {ref} = this.props
-    this.input = React.findDOMNode(this.refs[ref])
+    this.input = this._getInputDOMNode()
   },
 
   componentWillReceiveProps(nextProps) {
@@ -65,6 +64,30 @@ var MaskedInput = React.createClass({
     if (prevProps.mask !== this.props.mask && this.mask.selection.start) {
       this._updateInputSelection()
     }
+  },
+
+  // https://github.com/sanniassin/react-input-mask/blob/master/InputElement.js#L41-L60
+  // For backwards compatibility
+  _isDOMElement(element) {
+      return typeof HTMLElement === "object"
+             ? element instanceof HTMLElement // DOM2
+             : element.nodeType === 1 && typeof element.nodeName === "string";
+  },
+
+  _getInputDOMNode() {
+    var {ref} = this.props
+    var input = this.refs[ref]
+
+    if (!input) {
+        return null
+    }
+
+    // React 0.14
+    if (this._isDOMElement(input)) {
+        return input
+    }
+
+    return React.findDOMNode(input)
   },
 
   _updatePattern: function(props) {
