@@ -24,7 +24,8 @@ var MaskedInput = React.createClass({
 
   getDefaultProps() {
     return {
-      value: ''
+      value: '',
+      ref: 'input'
     }
   },
 
@@ -38,6 +39,11 @@ var MaskedInput = React.createClass({
       options.placeholderChar = this.props.placeholderChar
     }
     this.mask = new InputMask(options)
+  },
+
+  componentDidMount() {
+    var {ref} = this.props
+    this.input = React.findDOMNode(this.refs[ref])
   },
 
   componentWillReceiveProps(nextProps) {
@@ -181,10 +187,10 @@ var MaskedInput = React.createClass({
   },
 
   render() {
-    var {mask, formatCharacters, size, placeholder, ...props} = this.props
+    var {mask, formatCharacters, size, placeholder, ref, ...props} = this.props
     var patternLength = this.mask.pattern.length
     return <input {...props}
-      ref={r => this.input = r }
+      ref={ref}
       maxLength={patternLength}
       onChange={this._onChange}
       onKeyDown={this._onKeyDown}
